@@ -1,0 +1,517 @@
+@import "tailwindcss";
+
+/* Import layer-specific styles */
+@import "../styles/mapPanes.css"; /* Critical: Must be first for pane setup */
+@import "../styles/communityLayer.css";
+@import "../styles/parkLayer.css";
+
+/* Tile-Synchronized Map Styles - Prevents positioning drift */
+.tile-sync-park-marker {
+  transform-origin: center center !important;
+  pointer-events: auto !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.tile-sync-park-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 18px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+  /* Remove font-size transition to prevent layout shifts */
+  transition: text-shadow 0.2s ease;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+  /* Ensure stable positioning */
+  transform-origin: center center;
+  position: relative;
+}
+
+/* Remove Leaflet's default marker styling */
+.leaflet-marker-icon.tile-sync-park-marker {
+  transform-origin: center center !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Prevent flying during zoom animations */
+.leaflet-zoom-anim .leaflet-marker-icon.tile-sync-park-marker {
+  transform-origin: center center !important;
+  transition: none !important;
+}
+
+/* Stable hover effect on emoji that doesn't change size */
+.tile-sync-park-marker:hover .tile-sync-park-icon {
+  /* Keep same font-size to prevent layout shifts */
+  font-size: 18px;
+  /* Use text-shadow for visual enhancement instead */
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.tile-sync-popup .leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.boundary-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+}
+
+/* Trust Leaflet's default rendering completely */
+
+@layer base {
+  :root {
+    /* Golden Ratio CSS Variables - Matching Reference Project */
+    --golden-ratio: 1.618;
+    --base-unit: 8px;
+    
+    /* Sacred Geometry Spacing Scale - Fibonacci Based */
+    --space-xs: 5px;
+    --space-sm: 8px;
+    --space-md: 13px;
+    --space-lg: 21px;
+    --space-xl: 34px;
+    --space-2xl: 55px;
+    --space-3xl: 89px;
+    --space-4xl: 144px;
+    
+    /* Typography Scale - Golden Ratio Based */
+    --text-xs: 10px;
+    --text-sm: 12px;
+    --text-base: 16px;
+    --text-lg: 20px;
+    --text-xl: 26px;
+    --text-2xl: 32px;
+    --text-3xl: 42px;
+    --text-4xl: 52px;
+    --text-5xl: 68px;
+    
+    /* Container Widths - Golden Ratio Based */
+    --container-sm: 618px;
+    --container-md: 1000px;
+    --container-lg: 1618px;
+    
+    /* Animation Timings - Golden Ratio Based */
+    --duration-fast: 160ms;
+    --duration-normal: 260ms;
+    --duration-slow: 420ms;
+    --duration-slower: 680ms;
+
+    /* Chicago Brand Colors */
+    --color-chicago-blue: 0 63 127;
+    --color-chicago-red: 200 16 46;
+    --color-map-highlight: 59 130 246;
+    --color-map-hover: 96 165 250;
+
+    /* Legacy Variables for Compatibility */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+/* Chicago theme utilities */
+.text-chicago-blue {
+  color: rgb(var(--color-chicago-blue));
+}
+
+.bg-chicago-blue {
+  background-color: rgb(var(--color-chicago-blue));
+}
+
+/* Leaflet CSS overrides */
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  font-family: inherit !important;
+  min-height: 400px !important;
+  position: relative !important;
+}
+
+/* Hide any Leaflet bounds indicators or selection boxes */
+.leaflet-bounds-overlay,
+.leaflet-selection-overlay,
+.leaflet-bounds-indicator,
+.leaflet-debug,
+.leaflet-debug *,
+.leaflet-bounds,
+.leaflet-bounds *,
+.leaflet-selection-box,
+.leaflet-selection-box *,
+.leaflet-interactive[data-selected],
+.leaflet-zoom-box,
+.leaflet-draw-tooltip {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Gentle animation optimizations - preserve Leaflet functionality */
+.leaflet-zoom-animated {
+  /* Let Leaflet handle its own transitions */
+}
+
+.leaflet-fade-anim {
+  /* Let Leaflet handle its own transitions */
+}
+
+
+/* Ensure map container has proper height */
+#__next {
+  height: 100% !important;
+}
+
+html, body {
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure map containers are properly sized */
+[id*="map-"], [id*="simple-map"] {
+  min-height: 400px !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.leaflet-control-layers {
+  @apply bg-white border-gray-200 shadow-lg;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply bg-white text-gray-900 rounded-lg shadow-lg;
+}
+
+.leaflet-popup-tip {
+  @apply bg-white;
+}
+
+/* Community area tooltips matching reference project */
+.community-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  color: #1f2937 !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  padding: 8px 10px !important;
+  pointer-events: none !important;
+}
+
+.community-tooltip:before {
+  border-top-color: #d1d5db !important;
+}
+
+.community-tooltip:after {
+  border-top-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Zoom controls positioning */
+.leaflet-top.leaflet-right {
+  top: 16px !important;
+  right: 16px !important;
+}
+
+/* Attribution control styling */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+}
+
+/* Community area hover effects - smooth and responsive */
+.leaflet-interactive {
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.leaflet-interactive:hover {
+  cursor: pointer !important;
+}
+
+/* Ensure community area polygons are interactive */
+.leaflet-pane.communityBoundaries path {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.leaflet-pane.communityBoundaries path:hover {
+  cursor: pointer !important;
+}
+
+/* Community area polygon class */
+.community-area-polygon {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* Smooth tooltip animations */
+.leaflet-tooltip {
+  transition: opacity 0.15s ease-in-out !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Popup animations */
+.leaflet-popup {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Tile-synchronized park markers */
+.leaflet-park-pane {
+  /* Ensure pane renders exactly like tile pane */
+  transform-origin: 0 0 !important;
+  will-change: transform !important;
+  position: relative !important;
+}
+
+.tile-sync-park-marker {
+  /* Critical: Match tile rendering characteristics */
+  transform-origin: 0 0 !important;
+  backface-visibility: hidden !important;
+  will-change: transform !important;
+  /* Prevent any CSS transitions during zoom */
+  transition: none !important;
+}
+
+.tile-sync-park-icon {
+  font-size: 20px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  user-select: none !important;
+  pointer-events: none !important;
+  /* Ensure icon stays crisp during zoom */
+  image-rendering: -webkit-optimize-contrast !important;
+  transform: translate3d(0, 0, 0) !important;
+  backface-visibility: hidden !important;
+}
+
+/* Tile-synchronized popup styling */
+.tile-sync-popup {
+  /* Ensure popup renders in sync with tiles */
+  transform-origin: 0 0 !important;
+  backface-visibility: hidden !important;
+}
+
+.park-popup-content {
+  padding: 8px !important;
+  min-width: 200px !important;
+  font-family: inherit !important;
+}
+
+.park-popup-title {
+  margin: 0 0 6px 0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1f2937 !important;
+}
+
+.park-popup-address {
+  margin: 0 0 6px 0 !important;
+  font-size: 12px !important;
+  color: #6b7280 !important;
+}
+
+.park-popup-description {
+  margin: 0 0 8px 0 !important;
+  font-size: 11px !important;
+  color: #6b7280 !important;
+}
+
+.park-popup-amenities {
+  margin-top: 8px !important;
+}
+
+.park-popup-amenities-title {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  margin-bottom: 4px !important;
+}
+
+.park-popup-amenities-list {
+  font-size: 10px !important;
+  color: #6b7280 !important;
+}
+
+/* Stable hover effects that don't cause position shifts */
+.leaflet-container:not(.leaflet-zoom-anim) .tile-sync-park-marker {
+  transition: filter 0.15s ease !important;
+}
+
+.leaflet-container:not(.leaflet-zoom-anim) .tile-sync-park-marker:hover {
+  /* Use filter effects instead of transform to prevent position shifts */
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3)) brightness(1.1) !important;
+}
+
+/* Custom map controls */
+.map-control-button {
+  @apply bg-white hover:bg-gray-100 text-gray-900 border border-gray-200 rounded-md shadow-sm transition-colors;
+}
+
+/* Golden ratio grid helpers */
+.gr-grid {
+  display: grid;
+  gap: var(--spacing-phi-5);
+}
+
+.gr-container {
+  max-width: 1618px; /* Golden ratio container */
+  margin: 0 auto;
+  padding: 0 var(--spacing-phi-6);
+}
+
+/* Sacred geometry layout utilities */
+.sidebar-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  gap: var(--spacing-phi-6);
+  height: 100vh;
+}
+
+.phi-aspect-ratio {
+  aspect-ratio: var(--map-ratio);
+}
+
+/* Simple boundary styling - no synchronization overrides */
+.boundary-tooltip {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  font-size: 13px !important;
+  padding: 6px 8px !important;
+  pointer-events: none !important;
+}
+
+/* Clean community area styling - no transform overrides */
+.community-boundary,
+.community-boundary-hover,
+.community-boundary-selected {
+  pointer-events: auto !important;
+  transition: fill-opacity 0.15s ease, opacity 0.15s ease !important;
+}
+
+.community-area {
+  fill: rgba(59, 130, 246, 0.1);
+  stroke: rgb(59, 130, 246);
+  stroke-width: 2;
+  cursor: pointer;
+  vector-effect: non-scaling-stroke !important;
+  shape-rendering: geometricPrecision !important;
+  transition: fill-opacity 0.2s ease !important;
+}
+
+.community-area:hover {
+  fill: rgba(59, 130, 246, 0.3);
+  stroke-width: 3;
+}
+
+.community-area.selected {
+  fill: rgba(239, 68, 68, 0.2);
+  stroke: rgb(239, 68, 68);
+  stroke-width: 3;
+}
+
+/* Landmark markers */
+.landmark-marker {
+  @apply bg-blue-600 text-white rounded-full shadow-lg border-2 border-white;
+  transition: transform 0.2s ease;
+}
+
+.landmark-marker:hover {
+  transform: scale(1.1);
+}
+
+/* Map loading animations */
+@keyframes shimmer {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+@keyframes pulse-width {
+  0%, 100% { width: 20%; }
+  50% { width: 80%; }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-width {
+  animation: pulse-width 2s ease-in-out infinite;
+}

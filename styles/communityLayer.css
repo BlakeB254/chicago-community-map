@@ -1,0 +1,152 @@
+/* Community Layer Styles - Proper pane management */
+
+/* Custom panes for layer organization */
+.leaflet-communityBoundaries-pane {
+  z-index: 200;
+  pointer-events: auto !important;
+}
+
+/* Ensure all paths in community boundaries pane are interactive */
+.leaflet-communityBoundaries-pane path {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.leaflet-parks-pane {
+  z-index: 300;
+}
+
+.leaflet-landmarks-pane {
+  z-index: 400;
+}
+
+.leaflet-roads-pane {
+  z-index: 350;
+}
+
+/* Community area base styles */
+.community-area {
+  cursor: pointer;
+  transition: fill-opacity 0.2s ease-out, stroke-width 0.2s ease-out;
+}
+
+/* Hover effect */
+.community-area:hover {
+  fill-opacity: 0.35 !important;
+  stroke-width: 2.5 !important;
+}
+
+/* Selected state */
+.community-area-selected {
+  fill-opacity: 0.4 !important;
+  stroke-width: 3 !important;
+}
+
+/* Highlighted areas */
+.community-area-highlighted {
+  fill-opacity: 0.3 !important;
+  stroke-width: 2 !important;
+}
+
+/* Focused mode - de-emphasize other areas */
+.focused-mode .community-area:not(.community-area-focused) {
+  fill-opacity: 0.05 !important;
+  stroke-opacity: 0.5 !important;
+}
+
+/* Community popup styling */
+.community-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.community-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.community-popup-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #003f7f;
+}
+
+.area-number {
+  font-size: 12px;
+  color: #737373;
+  font-weight: 500;
+}
+
+.popup-section {
+  margin-top: 8px;
+}
+
+.popup-section h4 {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Community tooltip */
+.community-tooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+/* Disable interactions during zoom transitions */
+.zoom-transitioning .community-area {
+  pointer-events: none !important;
+}
+
+/* Smooth zoom animations */
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Prevent jarring at animation end */
+.leaflet-zoom-anim .leaflet-pane {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Zoom-based style adjustments */
+[data-zoom-level="10"] .community-area,
+[data-zoom-level="11"] .community-area {
+  stroke-width: 1px;
+}
+
+[data-zoom-level="12"] .community-area,
+[data-zoom-level="13"] .community-area {
+  stroke-width: 1.5px;
+}
+
+[data-zoom-level="14"] .community-area,
+[data-zoom-level="15"] .community-area,
+[data-zoom-level="16"] .community-area,
+[data-zoom-level="17"] .community-area,
+[data-zoom-level="18"] .community-area,
+[data-zoom-level="19"] .community-area,
+[data-zoom-level="20"] .community-area {
+  stroke-width: 2px;
+}
+
+/* Performance optimizations */
+.community-area {
+  will-change: fill-opacity, stroke-width;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .community-area {
+    transition: none !important;
+  }
+}

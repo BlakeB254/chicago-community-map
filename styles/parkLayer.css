@@ -1,0 +1,105 @@
+/* Park Layer Styles - Synchronized with tile updates */
+
+/* Park marker container - tile-synchronized */
+.park-marker {
+  pointer-events: auto !important;
+  transition: none !important; /* Disable transitions for sync */
+  z-index: 300;
+}
+
+/* Park icon wrapper */
+.park-marker-optimized {
+  background: none !important;
+  border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto !important;
+  will-change: transform; /* Optimize for animations */
+}
+
+/* Park icon content */
+.park-icon-content {
+  display: block;
+  text-align: center;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+  transition: transform 0.15s ease-out;
+  cursor: pointer;
+}
+
+/* Hover effect for park icons */
+.park-marker-optimized:hover .park-icon-content {
+  transform: scale(1.15);
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Park popup styling */
+.park-popup {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.park-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.park-popup .leaflet-popup-content {
+  margin: 0;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+/* Zoom-based visibility with smoother transitions */
+[data-zoom-level="10"] .park-marker,
+[data-zoom-level="11"] .park-marker,
+[data-zoom-level="12"] .park-marker {
+  display: none !important;
+}
+
+/* Show parks at zoom 13+ */
+[data-zoom-level="13"] .park-marker .park-icon-content,
+[data-zoom-level="14"] .park-marker .park-icon-content {
+  opacity: 0.85;
+}
+
+[data-zoom-level="15"] .park-marker .park-icon-content,
+[data-zoom-level="16"] .park-marker .park-icon-content,
+[data-zoom-level="17"] .park-marker .park-icon-content,
+[data-zoom-level="18"] .park-marker .park-icon-content,
+[data-zoom-level="19"] .park-marker .park-icon-content,
+[data-zoom-level="20"] .park-marker .park-icon-content {
+  opacity: 1;
+}
+
+/* Selected area park highlighting */
+.community-selected .park-marker .park-icon-content {
+  filter: drop-shadow(0 0 6px rgba(0, 150, 57, 0.6));
+  transform: scale(1.1);
+}
+
+/* Park clustering prevention */
+.park-marker-cluster {
+  display: none !important;
+}
+
+/* Tile loading optimization */
+.leaflet-tile-pane {
+  will-change: transform;
+}
+
+/* Disable park markers during zoom transitions */
+.zoom-transitioning .park-marker {
+  pointer-events: none !important;
+}
+
+/* Performance optimization for many parks */
+@media (prefers-reduced-motion: reduce) {
+  .park-icon-content {
+    transition: none !important;
+  }
+  
+  .park-marker-optimized:hover .park-icon-content {
+    transform: none;
+  }
+}

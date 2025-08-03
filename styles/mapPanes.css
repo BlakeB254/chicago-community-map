@@ -1,0 +1,96 @@
+/* Critical Map Pane Styles - Prevents layer displacement */
+
+/* Ensure all custom panes use the same coordinate system as tiles */
+.leaflet-communityBoundaries-pane,
+.leaflet-parks-pane,
+.leaflet-landmarks-pane,
+.leaflet-roads-pane,
+.leaflet-entities-pane,
+.leaflet-overlays-pane {
+  /* Critical: Match tile pane rendering context */
+  transform-origin: 0 0 !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: none !important; /* Let individual elements handle events */
+}
+
+/* Enable pointer events only on actual features */
+.leaflet-communityBoundaries-pane path,
+.leaflet-communityBoundaries-pane polygon {
+  pointer-events: auto !important;
+}
+
+/* Prevent any transitions during map operations */
+.leaflet-zoom-anim .leaflet-communityBoundaries-pane,
+.leaflet-zoom-anim .leaflet-parks-pane,
+.leaflet-pan-anim .leaflet-communityBoundaries-pane,
+.leaflet-pan-anim .leaflet-parks-pane {
+  transition: none !important;
+}
+
+/* Ensure GeoJSON layers don't have their own transforms */
+.leaflet-communityBoundaries-pane svg,
+.leaflet-parks-pane svg {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  transform-origin: 0 0 !important;
+}
+
+/* Critical: Disable all CSS transforms on community boundaries */
+.leaflet-communityBoundaries-pane g,
+.leaflet-communityBoundaries-pane path {
+  transform: none !important;
+  transform-origin: 0 0 !important;
+}
+
+/* Prevent displacement during zoom animations */
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: transform !important;
+}
+
+/* Ensure map container doesn't create new stacking context */
+.leaflet-container {
+  transform: none !important;
+  will-change: auto !important;
+}
+
+/* Fix for Safari rendering issues */
+.leaflet-safari .leaflet-communityBoundaries-pane,
+.leaflet-safari .leaflet-parks-pane {
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* Prevent any margin or padding that could cause displacement */
+.leaflet-pane {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure tile pane and overlay panes align perfectly */
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane {
+  transform-origin: 0 0 !important;
+}
+
+/* Override any theme transitions that might interfere */
+.leaflet-container * {
+  transition-property: opacity, fill-opacity, stroke-width !important;
+  transition-duration: 0.2s !important;
+  /* Never transition transform properties */
+  transition-property: transform, translate, scale, rotate !important;
+  transition-duration: 0s !important;
+}
