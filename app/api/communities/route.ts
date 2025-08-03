@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const bounds = searchParams.get('bounds');
+    const areaNumber = searchParams.get('areaNumber');
     const zoom = parseInt(searchParams.get('zoom') || '11');
 
     // Validate zoom level
@@ -63,6 +64,14 @@ export async function GET(request: Request) {
           ST_MakeEnvelope(${west}, ${south}, ${east}, ${north}, 4326)
         )`
       );
+    }
+
+    // Add area number filtering if provided
+    if (areaNumber) {
+      const areaNum = parseInt(areaNumber);
+      if (!isNaN(areaNum)) {
+        query = query.where(sql`${communityAreas.areaNumber} = ${areaNum}`);
+      }
     }
 
     const communities = await query;
