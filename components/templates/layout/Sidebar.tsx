@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { CommunityAreaSearch } from '../sidebar/CommunityAreaSearch';
-import { CommunityAreaDetails } from '../sidebar/CommunityAreaDetails';
+import { CommunityAreaSearch } from '@/components/molecules/sidebar/CommunityAreaSearch';
+import { CommunityAreaDetails } from '@/components/molecules/sidebar/CommunityAreaDetails';
 import { Park } from '@/types/park';
 
 interface CommunityArea {

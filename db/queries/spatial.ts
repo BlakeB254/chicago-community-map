@@ -49,7 +49,18 @@ export async function getCityBoundariesForBounds(
 ) {
   const simplifyTolerance = getSimplifyTolerance(zoom);
   
-  let query = dbRead
+  const conditions = [
+    sql`ST_Intersects(
+      ${cityBoundaries.geometry},
+      ST_MakeEnvelope(${bounds.west}, ${bounds.south}, ${bounds.east}, ${bounds.north}, 4326)
+    )`
+  ];
+
+  if (boundaryType) {
+    conditions.push(eq(cityBoundaries.boundaryType, boundaryType));
+  }
+
+  return dbRead
     .select({
       id: cityBoundaries.id,
       name: cityBoundaries.name,
@@ -63,25 +74,25 @@ export async function getCityBoundariesForBounds(
       )::json`,
     })
     .from(cityBoundaries)
-    .where(
-      sql`ST_Intersects(
-        ${cityBoundaries.geometry},
-        ST_MakeEnvelope(${bounds.west}, ${bounds.south}, ${bounds.east}, ${bounds.north}, 4326)
-      )`
-    );
-
-  if (boundaryType) {
-    query = query.where(eq(cityBoundaries.boundaryType, boundaryType));
-  }
-
-  return query;
+    .where(and(...conditions));
 }
 
 /**
  * Get landmarks within specified bounds
  */
 export async function getLandmarksForBounds(bounds: LatLngBounds, category?: string) {
-  let query = dbRead
+  const conditions = [
+    sql`ST_Within(
+      ${landmarks.location},
+      ST_MakeEnvelope(${bounds.west}, ${bounds.south}, ${bounds.east}, ${bounds.north}, 4326)
+    )`
+  ];
+
+  if (category) {
+    conditions.push(eq(landmarks.category, category));
+  }
+
+  return dbRead
     .select({
       id: landmarks.id,
       name: landmarks.name,
@@ -92,18 +103,7 @@ export async function getLandmarksForBounds(bounds: LatLngBounds, category?: str
       location: sql<any>`ST_AsGeoJSON(${landmarks.location})::json`,
     })
     .from(landmarks)
-    .where(
-      sql`ST_Within(
-        ${landmarks.location},
-        ST_MakeEnvelope(${bounds.west}, ${bounds.south}, ${bounds.east}, ${bounds.north}, 4326)
-      )`
-    );
-
-  if (category) {
-    query = query.where(eq(landmarks.category, category));
-  }
-
-  return query;
+    .where(and(...conditions));
 }
 
 /**
@@ -116,7 +116,18 @@ export async function getRoadsForBounds(
 ) {
   const simplifyTolerance = getSimplifyTolerance(zoom);
   
-  let query = dbRead
+  const conditions = [
+    sql`ST_Intersects(
+      ${roads.geometry},
+      ST_MakeEnvelope(${bounds.west}, ${bounds.south}, ${bounds.east}, ${bounds.north}, 4326)
+    )`
+  ];
+
+  if (roadType) {
+    conditions.push(eq(roads.roadType, roadType));
+  }
+
+  return dbRead
     .select({
       id: roads.id,
       name: roads.name,
@@ -130,18 +141,7 @@ export async function getRoadsForBounds(
       )::json`,
     })
     .from(roads)
-    .where(
-      sql`ST_Intersects(
-        ${roads.geometry},
-        ST_MakeEnvelope(${bounds.west}, ${bounds.south}, ${bounds.east}, ${bounds.north}, 4326)
-      )`
-    );
-
-  if (roadType) {
-    query = query.where(eq(roads.roadType, roadType));
-  }
-
-  return query;
+    .where(and(...conditions));
 }
 
 /**

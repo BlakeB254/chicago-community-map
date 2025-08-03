@@ -52,11 +52,6 @@ export const createCommunityLayer = (
         style: () => toLeafletStyle(style),
         pane: pane, // Ensure pane is set
         interactive: true, // Force interactive to true for debugging
-        // Critical: disable automatic bounds updates that can cause displacement
-        updateWhenIdle: false,
-        updateWhenZooming: false,
-        // Ensure smooth rendering
-        smoothFactor: 1.0,
         onEachFeature: (feature, layer) => {
           // Always add event handlers for debugging
           const pathLayer = layer as L.Path;
@@ -79,7 +74,7 @@ export const createCommunityLayer = (
               console.log('🎯 Layer click event triggered for area:', area.areaNumber, area.communityName);
               // Set a flag to indicate a layer was clicked
               if (e.originalEvent) {
-                e.originalEvent._stopped = true;
+                (e.originalEvent as any)._stopped = true;
               }
               onAreaClick(area);
             },
@@ -128,7 +123,7 @@ export const updateLayerStyles = (
   layersMap: Map<number, L.GeoJSON>,
   styleOptions: AreaStyleOptions
 ): void => {
-  const currentZoom = layersMap.values().next().value?._map?.getZoom() || 11;
+  const currentZoom = (layersMap.values().next().value as any)?._map?.getZoom() || 11;
 
   layersMap.forEach((layer, areaNumber) => {
     layer.eachLayer((subLayer: any) => {

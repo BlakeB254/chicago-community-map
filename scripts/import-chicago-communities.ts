@@ -7,7 +7,7 @@ import { neon } from '@neondatabase/serverless';
 import { eq } from 'drizzle-orm';
 
 // Import our database schema
-import { communities } from '../db/schema/spatial';
+import { communityAreas } from '../db/schema/spatial';
 
 // Get database URL from environment
 const databaseUrl = process.env.DATABASE_URL;
@@ -79,31 +79,34 @@ async function importChicagoCommunities() {
       try {
         // Check if community already exists
         const existing = await db
-          .select({ id: communities.id })
-          .from(communities)
-          .where(eq(communities.areaNumber, areaNumber))
+          .select({ id: communityAreas.id })
+          .from(communityAreas)
+          .where(eq(communityAreas.areaNumber, areaNumber))
           .limit(1);
 
         if (existing.length > 0) {
           // Update existing record
           await db
-            .update(communities)
+            .update(communityAreas)
             .set({
               name: communityData.name,
               geometry: communityData.geometry,
-              shapeArea: communityData.shapeArea,
-              shapeLength: communityData.shapeLength,
-              updatedAt: communityData.updatedAt,
+              properties: communityData
             })
-            .where(eq(communities.areaNumber, areaNumber));
+            .where(eq(communityAreas.areaNumber, areaNumber));
           
           updated++;
           console.log(`✅ Updated: ${communityName} (Area #${areaNumber})`);
         } else {
           // Insert new record
           await db
-            .insert(communities)
-            .values(communityData);
+            .insert(communityAreas)
+            .values({
+              areaNumber,
+              name: communityData.name,
+              geometry: communityData.geometry,
+              properties: communityData
+            });
           
           imported++;
           console.log(`🆕 Imported: ${communityName} (Area #${areaNumber})`);
@@ -115,8 +118,8 @@ async function importChicagoCommunities() {
     }
 
     console.log('\n📈 Import Summary:');
-    console.log(`   🆕 New communities imported: ${imported}`);
-    console.log(`   ✅ Existing communities updated: ${updated}`);
+    console.log(`   🆕 New communityAreas imported: ${imported}`);
+    console.log(`   ✅ Existing communityAreas updated: ${updated}`);
     console.log(`   ⚠️  Communities skipped: ${skipped}`);
     console.log(`   📊 Total processed: ${imported + updated + skipped}`);
     

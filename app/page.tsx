@@ -7,9 +7,9 @@ import { ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MapSkeleton } from '@/components/atoms/map-skeleton';
 import { MapLoadingSkeleton } from '@/components/atoms/MapLoadingSkeleton';
-import { AppLayout } from '@/components/templates/AppLayout';
-import { Sidebar } from '@/components/templates/Sidebar';
-import { TopNavBar } from '@/components/templates/TopNavBar';
+import { AppLayout } from '@/components/templates/layout/AppLayout';
+import { Sidebar } from '@/components/templates/layout/Sidebar';
+import { TopNavBar } from '@/components/templates/layout/TopNavBar';
 import { chicagoParkService } from '@/services/chicagoParkService';
 import { Park } from '@/types/park';
 

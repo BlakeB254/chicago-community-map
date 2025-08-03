@@ -111,7 +111,7 @@ export function normalizeGeoJSON(feature: GeoJSON.Feature): GeoJSON.Feature {
     // Normalize coordinates precision
     const normalizedGeometry = {
       ...feature.geometry,
-      coordinates: normalizeCoordinates(feature.geometry.coordinates)
+      coordinates: normalizeCoordinates((feature.geometry as any).coordinates)
     };
 
     // Fix polygon winding order (exterior ring counterclockwise, holes clockwise)

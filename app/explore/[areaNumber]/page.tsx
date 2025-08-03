@@ -141,7 +141,8 @@ export default function ExplorePage() {
         coordinates: [41.8781 + (Math.random() - 0.5) * 0.02, -87.6298 + (Math.random() - 0.5) * 0.02],
         communityArea: parseInt(community.area_numbe),
         amenities: ['Playground', 'Walking Path', 'Picnic Area'].slice(0, Math.floor(Math.random() * 3) + 1),
-        description: `A beautiful park in ${community.community} with various amenities for the community.`
+        description: `A beautiful park in ${community.community} with various amenities for the community.`,
+        size: ['small', 'medium', 'large'][Math.floor(Math.random() * 3)] as 'small' | 'medium' | 'large'
       });
     }
     

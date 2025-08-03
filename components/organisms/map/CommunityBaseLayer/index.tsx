@@ -131,8 +131,8 @@ export const CommunityBaseLayer: React.FC<CommunityBaseLayerProps> = ({
       layersMapRef.current.clear();
     }
 
-    // Create new layer group with pane option
-    const layerGroup = L.layerGroup({ pane: 'communityBoundaries' });
+    // Create new layer group
+    const layerGroup = L.layerGroup();
     layerGroupRef.current = layerGroup;
 
     // Process community areas with proper bounds and geometry

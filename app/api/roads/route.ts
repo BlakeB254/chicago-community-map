@@ -40,7 +40,7 @@ export async function GET(request: Request) {
           END
         )::json`,
       })
-      .from(roads);
+      .from(roads) as any;
 
     // Add bounds filtering if provided
     if (bounds) {
@@ -87,7 +87,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       type: 'FeatureCollection',
-      features: roadData.map((road) => ({
+      features: roadData.map((road: any) => ({
         type: 'Feature',
         id: road.id,
         properties: {

@@ -72,7 +72,7 @@ export async function GET(request: Request) {
           ELSE ${cityBoundaries.geometry}
         END
       )::json`,
-    }).from(cityBoundaries);
+    }).from(cityBoundaries) as any;
 
     // Apply conditions and execute query
     const boundaries = conditions.length > 0 
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       type: 'FeatureCollection',
-      features: boundaries.map((boundary) => ({
+      features: boundaries.map((boundary: any) => ({
         type: 'Feature',
         id: boundary.id,
         properties: {

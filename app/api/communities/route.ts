@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         // Always return centroid for labeling
         centroid: sql<any>`ST_AsGeoJSON(${communityAreas.centroid})::json`,
       })
-      .from(communityAreas);
+      .from(communityAreas) as any;
 
     // Add bounds filtering if provided
     if (bounds) {
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       type: 'FeatureCollection',
-      features: communities.map((community) => ({
+      features: communities.map((community: any) => ({
         type: 'Feature',
         id: community.id,
         properties: {

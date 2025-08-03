@@ -347,7 +347,7 @@ async function validateData(): Promise<void> {
     WHERE NOT ST_IsValid(geometry)
   `);
   
-  for (const result of invalidGeoms) {
+  for (const result of invalidGeoms.rows) {
     if (parseInt(result.invalid_count as string) > 0) {
       console.warn(`⚠️  Found ${result.invalid_count} invalid geometries in ${result.table_name}`);
     } else {

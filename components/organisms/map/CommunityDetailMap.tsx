@@ -146,11 +146,12 @@ export const CommunityDetailMap: React.FC<CommunityDetailMapProps> = ({
         attributionControl={true}
         preferCanvas={true}
         className="community-detail-map"
-        whenReady={(mapEvent) => {
-          console.log('🗺️ Community detail map ready');
-          const map = mapEvent.target;
-          setMapInstance(map);
-          setMapReady(true);
+        ref={(mapRef: any) => {
+          if (mapRef) {
+            console.log('🗺️ Community detail map ready');
+            setMapInstance(mapRef);
+            setMapReady(true);
+          }
         }}
       >
         {/* Tile Layer - matching main map */}

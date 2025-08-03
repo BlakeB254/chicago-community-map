@@ -63,7 +63,7 @@ async function testDatabaseConnection() {
       const postgisVersion = await db.execute(
         sql`SELECT PostGIS_Version() as version`
       );
-      console.log(`✅ PostGIS version: ${postgisVersion[0]?.version || 'Unknown'}`);
+      console.log(`✅ PostGIS version: ${postgisVersion.rows[0]?.version || 'Unknown'}`);
     } catch (error) {
       console.error('❌ PostGIS function test failed');
       console.error(`   Error: ${error instanceof Error ? error.message : error}`);

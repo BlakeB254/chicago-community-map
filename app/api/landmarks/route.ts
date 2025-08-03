@@ -28,7 +28,7 @@ export async function GET(request: Request) {
         communityAreaId: landmarks.communityAreaId,
         location: sql<any>`ST_AsGeoJSON(${landmarks.location})::json`,
       })
-      .from(landmarks);
+      .from(landmarks) as any;
 
     // Add bounds filtering if provided
     if (bounds) {
@@ -75,7 +75,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       type: 'FeatureCollection',
-      features: landmarkData.map((landmark) => ({
+      features: landmarkData.map((landmark: any) => ({
         type: 'Feature',
         id: landmark.id,
         properties: {

@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Import error:', error);
     return NextResponse.json(
-      { error: 'Import failed', details: error.message },
+      { error: 'Import failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -95,7 +95,7 @@ async function importChicagoPortalCommunities() {
       } catch (featureError) {
         errors.push({
           feature: feature.properties.community || 'Unknown',
-          error: featureError.message,
+          error: featureError instanceof Error ? featureError.message : "Unknown error",
         });
       }
     }
@@ -108,7 +108,7 @@ async function importChicagoPortalCommunities() {
       message: `Imported ${imported} community areas from Chicago Data Portal`,
     });
   } catch (error) {
-    throw new Error(`Failed to import Chicago Portal communities: ${error.message}`);
+    throw new Error(`Failed to import Chicago Portal communities: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -138,7 +138,8 @@ async function importChicagoPortalBoundaries() {
         });
       } catch (insertError) {
         // Skip if already exists (duplicate constraint error)
-        if (insertError.message?.includes('duplicate') || insertError.message?.includes('unique')) {
+        if ((insertError instanceof Error && insertError.message?.includes('duplicate')) || 
+            (insertError instanceof Error && insertError.message?.includes('unique'))) {
           continue;
         }
         throw insertError;
@@ -153,7 +154,7 @@ async function importChicagoPortalBoundaries() {
       message: `Imported ${imported} city boundaries from Chicago Data Portal`,
     });
   } catch (error) {
-    throw new Error(`Failed to import Chicago Portal boundaries: ${error.message}`);
+    throw new Error(`Failed to import Chicago Portal boundaries: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -208,7 +209,7 @@ async function importLocalGeoJSON(data: any, source: string) {
       } catch (featureError) {
         errors.push({
           feature: feature.properties.name || 'Unknown',
-          error: featureError.message,
+          error: featureError instanceof Error ? featureError.message : "Unknown error",
         });
       }
     }
@@ -220,6 +221,6 @@ async function importLocalGeoJSON(data: any, source: string) {
       message: `Imported ${imported} features from ${source}`,
     });
   } catch (error) {
-    throw new Error(`Failed to import local GeoJSON: ${error.message}`);
+    throw new Error(`Failed to import local GeoJSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
