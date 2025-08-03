@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef, useEffect, memo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { Map as LeafletMap } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -48,7 +48,7 @@ interface ChicagoMapProps {
   onAreaSelectFromMap?: (areaNumber: string | null) => void;
 }
 
-export function ChicagoMap({ 
+export const ChicagoMap = memo(function ChicagoMap({ 
   sidebarOpen = true, 
   selectedAreaFromSidebar = null,
   onAreaSelectFromMap
@@ -56,7 +56,18 @@ export function ChicagoMap({
   const [mapInstance, setMapInstance] = useState<LeafletMap | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(CHICAGO_MAP_CONFIG.zoom);
   const [mapReady, setMapReady] = useState(false);
-  const [mapKey] = useState(() => `chicago-map-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  
+  // Create a stable reference for the map container that won't change
+  const mapContainerKey = useRef(`chicago-map-${Math.random().toString(36).substr(2, 9)}`);
+  
+  // Prevent reinitialization by checking if map is already mounted
+  const [hasMapMounted, setHasMapMounted] = useState(false);
+  
+  useEffect(() => {
+    if (!hasMapMounted) {
+      setHasMapMounted(true);
+    }
+  }, [hasMapMounted]);
 
   // Load map data using custom hook
   const { communityAreas, parks, dataLoaded, mapError } = useMapData();
@@ -99,13 +110,24 @@ export function ChicagoMap({
     setIsZoomTransitioning(false);
   }, [setIsZoomTransitioning]);
 
-
+  // Clean up any existing map instances on unmount
+  useEffect(() => {
+    return () => {
+      if (mapContainerRef.current) {
+        // Clear any existing Leaflet map instances
+        const container = mapContainerRef.current;
+        if ((container as any)._leaflet_id) {
+          delete (container as any)._leaflet_id;
+        }
+      }
+    };
+  }, []);
 
   return (
     <div ref={mapContainerRef} className="absolute inset-0 w-full h-full">
       {/* React Leaflet Map Container */}
       <MapContainer
-        key={mapKey}
+        key={mapContainerKey.current}
         center={CHICAGO_MAP_CONFIG.center}
         zoom={CHICAGO_MAP_CONFIG.zoom}
         minZoom={CHICAGO_MAP_CONFIG.minZoom}
@@ -186,4 +208,4 @@ export function ChicagoMap({
       />
     </div>
   );
-}
+});
